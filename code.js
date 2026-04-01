@@ -17,6 +17,7 @@ function getComputerChoice() {
 
 
 function playRound(humanChoice, computerChoice, playUntil = 5) {
+    playUntilInput.remove();
     // tie breaker - check for tie, then human's victory, the rest is computer's victory
     if (humanChoice == computerChoice) {
         resultsBox.textContent = `It is a tie! ${humanChoice} ties with ${computerChoice}`;
@@ -33,8 +34,6 @@ function playRound(humanChoice, computerChoice, playUntil = 5) {
     }
 
     if (humanScore == playUntil || computerScore == playUntil) {
-        console.log('GAME OVER');
-        const body = document.querySelector('body');
         let winner = humanScore > computerScore ? 'YOU WIN' : 'MACHINE WINS';
 
         gameOverDiv.textContent = `GAME OVER ${winner}!!!`;
@@ -59,13 +58,19 @@ function reset() {
     gameOverDiv.textContent = "";
     resultsBox.textContent = "";
     score.textContent = `HUMAN ${humanScore} : ${computerScore} MACHINE`;
-    resultsBox.textContent = "Pick your poison:";
+    resultsBox.textContent = "Play until:";
+
+    playUntilInput.type = 'number';
+    playUntilInput.min = 1;
+    playUntilInput.max = 10;
+    playUntilInput.value = 5;
+
+    body.appendChild(playUntilInput);
+
+    resultsBox.parentNode.insertBefore(playUntilInput, resultsBox.nextSibling);
 
     playAgainBtn.remove();
     choices.forEach((choice) => choice.disabled = false);
-
-
-
 }
 
 const choices = document.querySelectorAll('button');
@@ -73,6 +78,8 @@ const score = document.querySelector('.score');
 const resultsBox = document.querySelector('.results');
 const playAgainBtn = document.createElement('button');
 const gameOverDiv = document.createElement('div');
+const body = document.querySelector('body');
+const playUntilInput = document.createElement('input');
 
 reset();
 
@@ -81,7 +88,7 @@ choices.forEach(
         function (e) {
             const userChoice = e.target.className;
             const computerChoice = getComputerChoice();
-            playRound(userChoice, computerChoice);
+            playRound(userChoice, computerChoice, playUntil = playUntilInput.value);
             score.textContent = `HUMAN ${humanScore} : ${computerScore} MACHINE`;
         }
     )
