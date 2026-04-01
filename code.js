@@ -15,59 +15,77 @@ function getComputerChoice() {
     }
 }
 
-function getHumanChoice() {
-    let humanChoice = prompt("Enter one of: rock, paper, scissors!");
 
-    return humanChoice.toLowerCase();
+function playRound(humanChoice, computerChoice, playUntil = 5) {
+    // tie breaker - check for tie, then human's victory, the rest is computer's victory
+    if (humanChoice == computerChoice) {
+        resultsBox.textContent = `It is a tie! ${humanChoice} ties with ${computerChoice}`;
+    } else if (
+        humanChoice == "rock" && computerChoice == "scissors" ||
+        humanChoice == "scissors" && computerChoice == "paper" ||
+        humanChoice == "paper" && computerChoice == "rock"
+    ) {
+        resultsBox.textContent = `You WIN! ${humanChoice} beats ${computerChoice}`
+        humanScore++;
+    } else {
+        resultsBox.textContent = `You LOSE! ${computerChoice} beats ${humanChoice}`;
+        computerScore++;
+    }
+
+    if (humanScore == playUntil || computerScore == playUntil) {
+        console.log('GAME OVER');
+        const body = document.querySelector('body');
+        let winner = humanScore > computerScore ? 'YOU WIN' : 'MACHINE WINS';
+
+        gameOverDiv.textContent = `GAME OVER ${winner}!!!`;
+        body.appendChild(gameOverDiv);
+
+        choices.forEach((choice) => choice.disabled = true);
+
+        playAgainBtn.textContent = 'Play Again!';
+        playAgainBtn.addEventListener(
+            'click',
+            () => reset()
+        )
+
+        body.appendChild(playAgainBtn);
+    }
 }
 
-function playGame(rounds = 5) {
+function reset() {
+    humanScore = 0;
+    computerScore = 0;
+
+    gameOverDiv.textContent = "";
+    resultsBox.textContent = "";
+    score.textContent = `HUMAN ${humanScore} : ${computerScore} MACHINE`;
+    resultsBox.textContent = "Pick your poison:";
+
+    playAgainBtn.remove();
+    choices.forEach((choice) => choice.disabled = false);
 
 
-    function playRound(humanChoice, computerChoice) {
-        // tie breaker - check for tie, then human's victory, the rest is computer's victory
-        if (humanChoice == computerChoice) {
-            console.log(`It is a tie! ${humanChoice} ties with ${computerChoice}`);
-        } else if (
-            humanChoice == "rock" && computerChoice == "scissors" ||
-            humanChoice == "scissors" && computerChoice == "paper" ||
-            humanChoice == "paper" && computerChoice == "rock"
-        ) {
-            console.log(`You WIN! ${humanChoice} beats ${computerChoice}`);
-            humanScore++;
-        } else {
-            console.log(`You LOSE! ${computerChoice} beats ${humanChoice}`);
-            computerScore++;
+
+}
+
+const choices = document.querySelectorAll('button');
+const score = document.querySelector('.score');
+const resultsBox = document.querySelector('.results');
+const playAgainBtn = document.createElement('button');
+const gameOverDiv = document.createElement('div');
+
+reset();
+
+choices.forEach(
+    (choice) => choice.addEventListener('click',
+        function (e) {
+            const userChoice = e.target.className;
+            const computerChoice = getComputerChoice();
+            playRound(userChoice, computerChoice);
+            score.textContent = `HUMAN ${humanScore} : ${computerScore} MACHINE`;
         }
-    }
-
-    let humanScore = 0;
-    let computerScore = 0;
-
-    let counter = 0
-    while (counter < rounds) {
-        counter++;
-
-        console.log(`Round number ${counter}`);
-        console.log(`Score COMPUTER: ${computerScore} - YOU: ${humanScore}`);
-
-        const humanChoice = getHumanChoice();
-        const computerChoice = getComputerChoice();
-
-        playRound(humanChoice, computerChoice);
-
-        console.log(computerScore);
-        console.log(humanScore);
-
-
-    }
-
-    console.log(`Game ended, the final score is COMPUTER: ${computerScore} - YOU: ${humanScore}`);
-
-}
-
-playGame();
-
+    )
+)
 
 
 
